@@ -22,4 +22,16 @@ public class WeatherController : ControllerBase
         Result result = await _parser.GetWeather(City);
         return result.Success ? Ok(result) : BadRequest(result);
     }
+
+    [HttpGet("{City}")]
+    [ProducesResponseType(typeof(Result),StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetWeatherFromUrl([FromRoute]string City)
+    {
+        if(string.IsNullOrEmpty(City))
+        {
+            return NoContent();
+        }
+        Result result = await _parser.GetWeather(City);
+        return result.Success ? Ok(result) : BadRequest(result);
+    }
 }
