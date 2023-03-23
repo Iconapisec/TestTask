@@ -7,9 +7,9 @@ namespace WebApiWeatherApplication.Controllers;
 [Route("api/[controller]")]
 public class WeatherController : ControllerBase
 {
-    private readonly WeatherParser _parser;
+    private readonly IWeatherParser _parser;
 
-    public WeatherController(WeatherParser parser) => _parser = parser;
+    public WeatherController(IWeatherParser parser) => _parser = parser;
 
     [HttpGet]
     [ProducesResponseType(typeof(Result),StatusCodes.Status200OK)]
@@ -25,7 +25,7 @@ public class WeatherController : ControllerBase
 
     [HttpGet("{City}")]
     [ProducesResponseType(typeof(Result),StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetWeatherFromUrl([FromRoute]string City)
+    public async Task<IActionResult> GetWeatherFromUrl(string City)
     {
         if(string.IsNullOrEmpty(City))
         {

@@ -2,12 +2,12 @@
 
 namespace WeatherLib;
 
-public class WeatherParser
+public class OpenWeatherMapParser : IWeatherParser
 {
     private readonly string _apiKey;
     private readonly HttpClient client = new();
 
-    public WeatherParser(string apiKey) => _apiKey = apiKey;
+    public OpenWeatherMapParser(string apiKey) => _apiKey = apiKey;
 
     public async Task<Result> GetWeather(string city)
     {
