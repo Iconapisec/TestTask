@@ -1,4 +1,3 @@
-using WeatherLib;
 using WebApiWeatherApplication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
+builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddWeatherParser(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
