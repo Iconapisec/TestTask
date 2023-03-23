@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using WeatherLib;
 
 namespace WebApiWeatherApplication.Controllers;
@@ -8,20 +9,9 @@ namespace WebApiWeatherApplication.Controllers;
 public class WeatherController : ControllerBase
 {
     private readonly IWeatherParser _parser;
+    private readonly IMemoryCache _cache;
 
-    public WeatherController(IWeatherParser parser) => _parser = parser;
-
-    [HttpGet]
-    [ProducesResponseType(typeof(Result),StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetWeather([FromQuery] string City)
-    {
-        if(string.IsNullOrEmpty(City))
-        {
-            return NoContent();
-        }
-        Result result = await _parser.GetWeather(City);
-        return result.Success ? Ok(result) : BadRequest(result);
-    }
+    public WeatherController(IWeatherParser parser, IMemoryCache cache) => (_parser,_cache) = (parser,cache);
 
     [HttpGet("{City}")]
     [ProducesResponseType(typeof(Result),StatusCodes.Status200OK)]
@@ -31,7 +21,15 @@ public class WeatherController : ControllerBase
         {
             return NoContent();
         }
-        Result result = await _parser.GetWeather(City);
+
+        if (!_cache.TryGetValue(City.ToUpper(), out Result result))
+        {
+            result = await _parser.GetWeather(City);
+            if (result?.Success == true)
+            {
+                _cache.Set(City.ToUpper(), result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(1)));
+            }
+        }
         return result.Success ? Ok(result) : BadRequest(result);
     }
 }
